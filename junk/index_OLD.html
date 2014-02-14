@@ -1,0 +1,147 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>dead-simple html5 audio playlist</title>
+  
+  <script type='text/javascript' src='http://code.jquery.com/jquery-1.9.1.js'></script>
+  <script type='text/javascript' src="http://cdnjs.cloudflare.com/ajax/libs/fastclick/0.6.10/fastclick.min.js"></script>
+  
+  
+  <link rel="stylesheet" type="text/css" href="main.css">
+  
+    
+      
+    
+  
+  
+
+
+<script type='text/javascript'>//<![CDATA[ 
+$(window).load(function(){
+
+var songs = {};
+
+
+var audioElement; 
+audioElement = document.createElement('audio');
+audioElement.setAttribute('src', 'aHintOfBlue_8-13-11.mp3');
+$.get();
+audioElement.addEventListener("load", function() {
+audioElement.play();
+}, true);
+    
+
+
+
+$(function() {
+    FastClick.attach(document.body);
+});
+
+
+var seek = 10;
+
+$(".playing").mousemove(function(e){
+  var parentOffset = $(this).parent().offset(); 
+  var relX = e.pageX - parentOffset.left;
+  //console.log(relX, $(this).width()); 
+  t = jQuery(this).find(".grey");
+  $(t).width( Math.floor(relX) );
+});
+
+$(".playing").mouseout(function(e){
+  t = jQuery(this).find(".grey");
+  //console.log("out");
+  $(t).width( 0 );
+});
+
+$(".song").click(function(e){
+   var parentOffset = $(this).parent().offset(); 
+   var relX = e.pageX - parentOffset.left;
+   //console.log(relX, $(this).width());
+    $(".blue").width( 0 );
+    $(".song").removeClass("playing")
+    $(this).addClass("playing");
+
+    t = jQuery(this).find(".blue");
+    
+    w = $(".song").width();
+
+    $(t).width( Math.floor(relX) );
+    
+    audioElement.play();
+    total = audioElement.duration
+    audioElement.currentTime = (relX/w)*total; // jumps to 29th secs
+    
+});
+
+
+
+animate();
+function animate() {
+    requestAnimationFrame(animate);
+    
+    seek = audioElement.currentTime;
+    total = audioElement.duration
+    w = $(".song").width();
+ 
+   
+    //console.log(seek,total,w);
+
+    //do stuff
+    $(".playing .blue").width( Math.floor(w*(seek/total)) );
+    
+}
+
+
+
+
+
+
+//just animate when active
+window.requestAnimFrame = (function () {
+    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function ( /* function */ callback, /* DOMElement */ element) {
+        window.setTimeout(callback, 1000 / 60);
+    };
+})();
+
+});//]]>  
+
+</script>
+
+</head>
+<body>
+  <div class="song playing">
+
+
+    <div class="left">&nbsp; It's a Song</div>
+    <div class="right">/5:30 &nbsp;</div>
+      <div class="right">0:00</div>
+    <div class="blue"></div>
+     <div class="grey"></div>
+                 <img src="spectrograms/s.jpg" class="img-spectro"> 
+
+                 
+
+</div>
+
+<div class="song notplaying">
+      <div class="left">&nbsp; First in Line</div>
+    <div class="right">1:22 &nbsp;</div>
+    <div class="blue"></div> 
+    <div class="grey"></div> 
+</div>
+
+<div class="song notplaying">
+      <div class="left">&nbsp; Another one in Blue</div>
+    <div class="right">15:30 &nbsp;</div>
+    <div class="blue"></div> 
+    <div class="grey"></div> 
+</div>
+
+</body>
+</html>
+

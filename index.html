@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+
+  <title>dead-simple html5 audio playlist</title>
+
+<script type='text/javascript' src='http://code.jquery.com/jquery-1.9.1.js'></script>
+  <script type='text/javascript' src="http://cdnjs.cloudflare.com/ajax/libs/fastclick/0.6.10/fastclick.min.js"></script>
+  
+  
+  <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="main.css">
+
+  <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+  
+   <script type='text/javascript'>//<![CDATA[ 
+  
+
+$(window).load(function(){
+
+var playing = false;
+
+var clicked_play_first = true;
+
+var play_idx = 1;
+var song_list = ['A Hint Of Blue', 'A Hopeful Conversation', 'A Phrase', 'Fatuity', 'Five Around', 'Gloaming Forest'];
+var audioElements = [];
+for (var i = 0; i < song_list.length; i++){
+   audioElements.push(document.createElement('audio'));
+   audioElements[i].setAttribute('src', 'songs_input/'+song_list[i]+'.mp3');
+   audioElements[i].addEventListener('ended', PlayNext);
+  $.get();
+}
+
+function PlayNext(){
+
+ $('#idx'+play_idx).removeClass("playing");
+ $('#idx'+play_idx).addClass("notplaying");
+ $(".notplaying .elapsed").text("");
+ $(".notplaying .blue").width( 0 );
+
+  play_idx++;
+  audioElements[play_idx-1].play();
+
+  
+
+  $('#idx'+play_idx).removeClass("notplaying");
+  $('#idx'+play_idx).addClass("playing");
+}
+
+
+$(".song").mousemove(function(e){
+
+  if ($(this).hasClass('playing')){
+    var parentOffset = $(this).parent().offset(); 
+    var relX = e.pageX - parentOffset.left;
+    t = jQuery(this).find(".grey");
+    $(t).width( Math.floor(relX) );
+  }
+});
+
+$(".song").mouseout(function(e){
+  if ($(this).hasClass('playing')){
+    t = jQuery(this).find(".grey");
+    $(t).width( 0 );
+  }
+});
+
+$(".btn").click( function(e){
+  if (!playing){
+    audioElements[play_idx-1].play();
+  }
+  playing = playing ? false : true;
+  $(".play").toggleClass('hidden');
+
+  if (clicked_play_first){
+    $('#idx1').removeClass("notplaying");
+    $('#idx1').addClass("playing");
+  }
+
+});
+
+$(".song").click(
+  function(e){
+
+    playing = true;
+
+    // add/remove visual styling classes
+     $('.song').addClass("notplaying");
+    $(this).removeClass("notplaying");
+
+    $(".song").removeClass("playing");
+    $(this).addClass("playing");
+
+
+    if (clicked_play_first){ $(".play").toggleClass('hidden'); };
+
+    $(".notplaying .blue").width( 0 );
+    $(".notplaying .grey").width( 0 );
+    $(".notplaying .elapsed").text("");
+
+    //stop all others
+    for (var i = 0; i < song_list.length; i++){
+      audioElements[i].pause();
+      audioElements[i].currentTime = 0;
+    }
+
+
+    //start the clicked one
+    play_idx = $(this).attr('id').substring(3);
+    audioElements[play_idx-1].play();
+
+    // for testing
+
+
+    clicked_play_first = false;
+
+  }
+);
+
+
+
+
+//animate each frame
+animate();
+function animate() {
+    requestAnimationFrame(animate);
+    
+    seek = audioElements[play_idx-1].currentTime;
+    total = audioElements[play_idx-1].duration
+    w = $(".song").width();
+   
+    ft_mins = Math.floor(seek/60);
+    ft_sec = Math.floor(seek%60);
+    if (ft_sec < 10){ ft_sec = '0'+ft_sec}
+    formatted_time = ft_mins+":"+ft_sec;
+
+    $(".playing .blue").width( Math.floor(w*(seek/total)) );
+    if (seek > 0){
+      $(".playing .elapsed").text( formatted_time + " /" );
+    } else{
+      $(".playing .elapsed").text("");
+    }
+
+    if (!playing){
+      audioElements[play_idx-1].pause();
+    } 
+    
+}
+
+
+
+}); //end on window load
+
+
+window.requestAnimFrame = (function () {
+    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function (  callback,  element) {
+        window.setTimeout(callback, 1000 / 60);
+    };
+})();
+
+/*
+$(window).load(function(){
+
+var songs = {};
+
+
+var audioElement; 
+audioElement = document.createElement('audio');
+audioElement.setAttribute('src', 'aHintOfBlue_8-13-11.mp3');
+$.get();
+audioElement.addEventListener("load", function() {
+audioElement.play();
+}, true);
+    
+
+
+
+$(function() {
+    FastClick.attach(document.body);
+});
+
+
+var seek = 10;
+
+$(".song").click(function(e){
+   var parentOffset = $(this).parent().offset(); 
+   var relX = e.pageX - parentOffset.left;
+   //console.log(relX, $(this).width());
+    $(".blue").width( 0 );
+
+    $('.song').addClass("notplaying")
+    $(this).removeClass("notplaying");
+
+    $(".song").removeClass("playing")
+    $(this).addClass("playing");
+
+
+    t = jQuery(this).find(".blue");
+    
+    w = $(".song").width();
+
+    $(t).width( Math.floor(relX) );
+    
+    audioElement.play();
+    total = audioElement.duration
+    audioElement.currentTime = (relX/w)*total; // jumps to 29th secs
+
+		 $(".playing").mousemove(function(e){
+		  var parentOffset = $(this).parent().offset(); 
+		  var relX = e.pageX - parentOffset.left;
+		  //console.log(relX, $(this).width()); 
+		  t = jQuery(this).find(".grey");
+		  $(t).width( Math.floor(relX) );
+		});
+
+		$(".playing").mouseout(function(e){
+		  t = jQuery(this).find(".grey");
+		  //console.log("out");
+		  $(t).width( 0 );
+		});
+    
+});
+
+
+
+animate();
+function animate() {
+    requestAnimationFrame(animate);
+    
+    seek = audioElement.currentTime;
+    total = audioElement.duration
+    w = $(".song").width();
+ 
+   
+    //console.log(seek,total,w);
+
+    //do stuff
+    //do stuff
+    $(".playing .blue").width( Math.floor(w*(seek/total)) );
+        $(".playing .elapsed").text( Math.floor(seek/60)+":"+Math.floor(seek%60)+" /" );
+    
+}
+
+
+
+
+
+
+//just animate when active
+window.requestAnimFrame = (function () {
+    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function (  callback,  element) {
+        window.setTimeout(callback, 1000 / 60);
+    };
+})();
+
+});//]]>  
+
+*/
+
+</script>
+
+</head>
+
+<body>
+
+<div id="menu-left">
+
+  <div class="btn">
+    <div class="play"><i class="fa fa-play"></i></div>
+    <div class="play hidden"><i class="fa fa-pause"></i></div>
+  </div>
+
+  <div class="btn-volume">
+    <input type="range" class="vVertical" />
+    <div class="btn-volume-inner"><i class="fa fa-volume-up"></i></div>
+  </div>
+
+</div>
+
+
+
+<div id="playlist">
+	
+		<div class="song notplaying" id="idx1">
+		    <div class="left">&nbsp; A Hint Of Blue</div>
+		    <div class="right">&nbsp;2:49 &nbsp;</div>
+		    <div class="right elapsed"></div>
+		    <div class="blue"></div>
+		    <div class="grey"></div>
+		    <img src="spectrograms/A Hint Of Blue.jpg" class="img-spectro">     
+		</div>
+	
+		<div class="song notplaying" id="idx2">
+		    <div class="left">&nbsp; A Hopeful Conversation</div>
+		    <div class="right">&nbsp;2:36 &nbsp;</div>
+		    <div class="right elapsed"></div>
+		    <div class="blue"></div>
+		    <div class="grey"></div>
+		    <img src="spectrograms/A Hopeful Conversation.jpg" class="img-spectro">     
+		</div>
+	
+		<div class="song notplaying" id="idx3">
+		    <div class="left">&nbsp; A Phrase</div>
+		    <div class="right">&nbsp;1:27 &nbsp;</div>
+		    <div class="right elapsed"></div>
+		    <div class="blue"></div>
+		    <div class="grey"></div>
+		    <img src="spectrograms/A Phrase.jpg" class="img-spectro">     
+		</div>
+	
+		<div class="song notplaying" id="idx4">
+		    <div class="left">&nbsp; Fatuity</div>
+		    <div class="right">&nbsp;2:34 &nbsp;</div>
+		    <div class="right elapsed"></div>
+		    <div class="blue"></div>
+		    <div class="grey"></div>
+		    <img src="spectrograms/Fatuity.jpg" class="img-spectro">     
+		</div>
+	
+		<div class="song notplaying" id="idx5">
+		    <div class="left">&nbsp; Five Around</div>
+		    <div class="right">&nbsp;2:35 &nbsp;</div>
+		    <div class="right elapsed"></div>
+		    <div class="blue"></div>
+		    <div class="grey"></div>
+		    <img src="spectrograms/Five Around.jpg" class="img-spectro">     
+		</div>
+	
+		<div class="song notplaying" id="idx6">
+		    <div class="left">&nbsp; Gloaming Forest</div>
+		    <div class="right">&nbsp;1:30 &nbsp;</div>
+		    <div class="right elapsed"></div>
+		    <div class="blue"></div>
+		    <div class="grey"></div>
+		    <img src="spectrograms/Gloaming Forest.jpg" class="img-spectro">     
+		</div>
+	
+</div>
+
+
+  <!--<div id="menu-right">
+
+      <img src="bg.png" class="img-album">
+
+  </div>-->
+
+</body>
+</html>
