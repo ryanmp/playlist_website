@@ -83,6 +83,14 @@ input[type=range].vVertical {
     border-color: #000;
 }
 
+h1{
+    font-family:  Helvetica, Arial, "Lucida Grande", sans-serif; 
+    margin:0px;
+    padding:20px 0px 20px 0px;
+    border: solid 0px #ddd;
+    border-width: 0px 1px 1px 1px;
+    text-align:center;
+}
 
 #playlist{
     position: absolute; 

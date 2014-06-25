@@ -20,6 +20,10 @@
 
 $(window).load(function(){
 
+$(function() { //faster click events on mobile
+    FastClick.attach(document.body);
+});
+
 var playing = false;
 
 var clicked_play_first = true;
@@ -44,8 +48,6 @@ function PlayNext(){
   play_idx++;
   audioElements[play_idx-1].play();
 
-  
-
   $('#idx'+play_idx).removeClass("notplaying");
   $('#idx'+play_idx).addClass("playing");
 }
@@ -59,6 +61,39 @@ $(".song").mousemove(function(e){
     t = jQuery(this).find(".grey");
     $(t).width( Math.floor(relX) );
   }
+});
+
+//volume slider
+$('input.vVertical').on('change', function(e) {
+  volume = $(this).val();
+  for (var i = 0; i < song_list.length; i++){
+    audioElements[i].volume=volume/100;
+  }
+  if (volume > 0){
+    $(".btn-volume-inner > i").attr("class","fa fa-volume-up");
+  } else{
+    $(".btn-volume-inner > i").attr("class","fa fa-volume-off");
+  }
+
+});
+
+//volume button
+$(".btn-volume-inner").click( function(e){
+
+  var temp_volume = 0;
+  if ($(".btn-volume-inner > i").hasClass("fa-volume-up")){
+    temp_volume = 0;
+    $('input.vVertical').val(0);
+  } else {
+    temp_volume = volume;
+    $('input.vVertical').val(volume);
+  }
+  
+  for (var i = 0; i < song_list.length; i++){
+    audioElements[i].volume=temp_volume/100;
+  }
+  $(".btn-volume-inner > i").toggleClass( "fa-volume-up" );
+  $(".btn-volume-inner > i").toggleClass( "fa-volume-off" );
 });
 
 $(".song").mouseout(function(e){
@@ -82,46 +117,56 @@ $(".btn").click( function(e){
 
 });
 
+
 $(".song").click(
   function(e){
 
-    playing = true;
-
-    // add/remove visual styling classes
-     $('.song').addClass("notplaying");
-    $(this).removeClass("notplaying");
-
-    $(".song").removeClass("playing");
-    $(this).addClass("playing");
-
-
-    if (clicked_play_first){ $(".play").toggleClass('hidden'); };
-
-    $(".notplaying .blue").width( 0 );
-    $(".notplaying .grey").width( 0 );
-    $(".notplaying .elapsed").text("");
-
-    //stop all others
-    for (var i = 0; i < song_list.length; i++){
-      audioElements[i].pause();
-      audioElements[i].currentTime = 0;
-    }
-
-
-    //start the clicked one
+    // get idx
     play_idx = $(this).attr('id').substring(3);
-    audioElements[play_idx-1].play();
 
-    // for testing
+    if ($(this).hasClass('notplaying')){
+
+      playing = true;
+
+      // add/remove visual styling classes
+       $('.song').addClass("notplaying");
+      $(this).removeClass("notplaying");
+
+      $(".song").removeClass("playing");
+      $(this).addClass("playing");
 
 
-    clicked_play_first = false;
+      if (clicked_play_first){ $(".play").toggleClass('hidden'); };
+
+      $(".notplaying .blue").width( 0 );
+      $(".notplaying .grey").width( 0 );
+      $(".notplaying .elapsed").text("");
+
+      //stop all others
+      for (var i = 0; i < song_list.length; i++){
+        audioElements[i].pause();
+        audioElements[i].currentTime = 0;
+      }
+
+      clicked_play_first = false;
+
+      //start the clicked one
+      audioElements[play_idx-1].play();
+
+    } else{
+
+      //seek part - contains a bug or two!
+      var total_duration = audioElements[play_idx-1].duration;
+      t = jQuery(this).find(".grey");
+      var seek_pos = t.width();
+      var total_width = $(".song").width();
+      var new_time = (seek_pos/total_width) * total_duration;
+      audioElements[play_idx-1].currentTime = new_time;
+
+    }
 
   }
 );
-
-
-
 
 //animate each frame
 animate();
@@ -166,7 +211,6 @@ $(window).load(function(){
 
 var songs = {};
 
-
 var audioElement; 
 audioElement = document.createElement('audio');
 audioElement.setAttribute('src', 'aHintOfBlue_8-13-11.mp3');
@@ -175,14 +219,6 @@ audioElement.addEventListener("load", function() {
 audioElement.play();
 }, true);
     
-
-
-
-$(function() {
-    FastClick.attach(document.body);
-});
-
-
 var seek = 10;
 
 $(".song").click(function(e){
@@ -274,7 +310,7 @@ window.requestAnimFrame = (function () {
   </div>
 
   <div class="btn-volume">
-    <input type="range" class="vVertical" />
+    <input type="range" class="vVertical" value="100" min="0" max="100" />
     <div class="btn-volume-inner"><i class="fa fa-volume-up"></i></div>
   </div>
 
@@ -283,6 +319,9 @@ window.requestAnimFrame = (function () {
 
 
 <div id="playlist">
+
+  <h1>{{ title }}</h1>
+
 	{% for s in songs %}
 		<div class="song notplaying" id="idx{{ loop.index }}">
 		    <div class="left">&nbsp; {{ s }}</div>

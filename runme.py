@@ -1,6 +1,4 @@
 
-
-
 import os, Image, jinja2, PIL.ImageOps, ImageEnhance, ImageFilter, commands
 
 def Main():
@@ -13,11 +11,9 @@ def Main():
 	# aac, ogg, and mp3 (for maximum compatibility)
 	#TranscodeToMultipleFormats(song_list)
 
-
-
 	# uses sox to generate a spectrogram image for each audiofile
 	# stored in /img
-	# GenerateSpectrograms(song_list_san,song_extensions,song_list)
+	GenerateSpectrograms(song_list_san,song_extensions,song_list)
 
 	# makes our index.html file from index.jinja
 	RenderTemplate(song_list,song_lengths, song_list_san)
@@ -64,7 +60,7 @@ def GenerateBlurredBg():
 	w, h = tmp_img.size
 
 	whiten = Image.new("RGBA", tmp_img.size, (255,255,255))
-	tmp_img = Image.blend(tmp_img, whiten, 1)
+	tmp_img = Image.blend(tmp_img, whiten, .9)
 
 	tmp_img = tmp_img.crop((5,0,w-5,h))
 	tmp_img.save("bg_blurred.png")
@@ -118,7 +114,5 @@ def GenerateSpectrograms(s,e,s2):
 		os.system("rm top.png bottom.png")
 
 	return 0
-
-
 
 print Main()
