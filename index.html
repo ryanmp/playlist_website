@@ -85,6 +85,11 @@ $(".btn-volume-inner").click( function(e){
     temp_volume = 0;
     $('input.vVertical').val(0);
   } else {
+
+    if (volume < 5) {
+      volume = 50;
+    }
+
     temp_volume = volume;
     $('input.vVertical').val(volume);
   }
@@ -125,6 +130,9 @@ $(".song").click(
 
     if ($(this).hasClass('notplaying')){
 
+      $(".play-pause").removeClass('hidden');
+      $(".play-play").addClass('hidden');
+
       playing = true;
 
       // add/remove visual styling classes
@@ -134,8 +142,12 @@ $(".song").click(
       $(".song").removeClass("playing");
       $(this).addClass("playing");
 
-
-      if (clicked_play_first){ $(".play").toggleClass('hidden'); };
+      /*
+      if (clicked_play_first){
+        console.log("clicked_play_first");
+        $(".play").toggleClass('hidden');
+      };
+      */
 
       $(".notplaying .blue").width( 0 );
       $(".notplaying .grey").width( 0 );
@@ -317,8 +329,8 @@ window.requestAnimFrame = (function () {
 <div id="menu-left">
 
   <div class="btn">
-    <div class="play"><i class="fa fa-play"></i></div>
-    <div class="play hidden"><i class="fa fa-pause"></i></div>
+    <div class="play play-play"><i class="fa fa-play"></i></div>
+    <div class="play hidden play-pause"><i class="fa fa-pause"></i></div>
   </div>
 
   <div class="btn-volume">
