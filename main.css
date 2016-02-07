@@ -4,11 +4,11 @@
 
 html { 
         background-color:#fff;
-  background: url(bg_blurred.png) no-repeat center center fixed; 
+  /*background: url(bg_blurred.png) no-repeat center center fixed; 
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
-  background-size: cover;
+  background-size: cover;*/
 }
 
 body { 
@@ -28,7 +28,6 @@ input[type=range].vVertical {
 
 .img-spectro{
     position:relative;
-    z-index:-2;
     height:60px;
     top:0px;
     display:block;
@@ -37,7 +36,7 @@ input[type=range].vVertical {
 
 .btn{
     background-color:rgba(0,0,0,0);
-    color:#333;
+    color:#777;
     border-radius: 7px;
     border: solid 1px #ddd;
     width:66px;
@@ -57,7 +56,7 @@ input[type=range].vVertical {
 
 .btn-volume{
     background-color:rgba(0,0,0,0);
-    color:#333;
+    color:#777;
     border-radius: 7px;
     border: solid 1px #ddd;
     width:66px;
@@ -77,14 +76,16 @@ input[type=range].vVertical {
 }
 
 .btn:hover{
-    background-color:rgba(0,0,0,.1);
+    /*background-color:rgba(0,0,0,.1);*/
     color:#000;
     cursor:pointer;
-    border-color: #000;
+    /*border-color: #000;*/
 }
 
 h1{
-    font-family:  Helvetica, Arial, "Lucida Grande", sans-serif; 
+    font-family:  Helvetica, Arial, "Lucida Grande", sans-serif;
+    color:#777;
+    font-weight:400; 
     margin:0px;
     padding:20px 0px 20px 0px;
     border: solid 0px #ddd;
@@ -93,9 +94,9 @@ h1{
 }
 
 #playlist{
+
     position: absolute; 
     top: 10px;
-    bottom: 30px;
     left: 86px;
     right: 86px;
 
@@ -120,7 +121,8 @@ h1{
     color:#777;
     height:100px;
     margin:0px;
-    background-color: rgba(235, 235, 235, .6);
+    /*background-color: rgba(235, 235, 235, .6);*/
+    background-color: rgba(255, 255, 255, 1);
     position:static;
     cursor:pointer;
     line-height:35px;
@@ -142,15 +144,12 @@ font-family:  Helvetica, Arial, "Lucida Grande", sans-serif;
 
 .notplaying:hover{
     color:#000;
-    background-color: rgba(255, 255, 255, 0);
 }
 
 .playing{
-    font-weight:600;
+    font-weight:400;
     color:#000;
-    box-shadow: 0px 0px 30px rgba(0,0,0,.3);
-    background-color: rgba(255, 255, 255, 0);
-    border-color: #ccc;
+    border-color: #ddd;
 }
 
 .left{
@@ -167,7 +166,7 @@ font-family:  Helvetica, Arial, "Lucida Grande", sans-serif;
 
 .blue{
  position:absolute;
-    background-color:rgba(100,100,255,.3);
+    background-color:rgba(100,100,255,.2);
     width:0px;
     height:100px;
     z-index:4;

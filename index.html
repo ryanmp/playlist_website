@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
 
-  <title>dead-simple html5 audio playlist</title>
+  <title>HTML5 Playlist Generator</title>
 
 <script type='text/javascript' src='http://code.jquery.com/jquery-1.9.1.js'></script>
   <script type='text/javascript' src="http://cdnjs.cloudflare.com/ajax/libs/fastclick/0.6.10/fastclick.min.js"></script>
@@ -20,13 +20,26 @@
 
 $(window).load(function(){
 
+$(window).keypress(function (e) {
+  if (e.keyCode === 0 || e.keyCode === 32) {
+    e.preventDefault()
+    play_pause();
+  }
+})
+
 $(function() { //faster click events on mobile
     FastClick.attach(document.body);
 });
 
+
+
 var playing = false;
 
 var clicked_play_first = true;
+
+var mouse_pos = 0
+
+var volume = 0;
 
 var play_idx = 1;
 var song_list = ['A Hint Of Blue', 'A Hopeful Conversation', 'A Phrase', 'Fatuity', 'Five Around', 'Gloaming Forest'];
@@ -60,6 +73,8 @@ $(".song").mousemove(function(e){
     var relX = e.pageX - parentOffset.left;
     t = jQuery(this).find(".grey");
     $(t).width( Math.floor(relX) );
+
+    mouse_pos = $(t).width();
   }
 });
 
@@ -108,7 +123,8 @@ $(".song").mouseout(function(e){
   }
 });
 
-$(".btn").click( function(e){
+
+function play_pause(){
   if (!playing){
     audioElements[play_idx-1].play();
   }
@@ -119,8 +135,13 @@ $(".btn").click( function(e){
     $('#idx1').removeClass("notplaying");
     $('#idx1').addClass("playing");
   }
+}
 
-});
+$(".btn").click(
+   function(e){
+    play_pause();
+   }
+);
 
 $(".song").click(
   function(e){
@@ -141,13 +162,6 @@ $(".song").click(
 
       $(".song").removeClass("playing");
       $(this).addClass("playing");
-
-      /*
-      if (clicked_play_first){
-        console.log("clicked_play_first");
-        $(".play").toggleClass('hidden');
-      };
-      */
 
       $(".notplaying .blue").width( 0 );
       $(".notplaying .grey").width( 0 );
@@ -170,23 +184,15 @@ $(".song").click(
       var total_duration = audioElements[play_idx-1].duration;
 
       t = jQuery(this).find(".grey");
-      var seek_pos = t.width();
+      //var seek_pos = t.width();
+      var seek_pos = mouse_pos;
 
       var total_width = $(".song").width();
       var new_time = (seek_pos/total_width) * total_duration;
 
-
-      console.log(seek_pos);
-      console.log(total_width);
-      console.log(total_duration);
-      console.log(new_time);
-
       audioElements[play_idx-1].currentTime = new_time;
 
-
     }
-
-  
 
   }
 );
@@ -230,96 +236,6 @@ window.requestAnimFrame = (function () {
     };
 })();
 
-/*
-$(window).load(function(){
-
-var songs = {};
-
-var audioElement; 
-audioElement = document.createElement('audio');
-audioElement.setAttribute('src', 'aHintOfBlue_8-13-11.mp3');
-$.get();
-audioElement.addEventListener("load", function() {
-audioElement.play();
-}, true);
-    
-var seek = 10;
-
-$(".song").click(function(e){
-   var parentOffset = $(this).parent().offset(); 
-   var relX = e.pageX - parentOffset.left;
-   //console.log(relX, $(this).width());
-    $(".blue").width( 0 );
-
-    $('.song').addClass("notplaying")
-    $(this).removeClass("notplaying");
-
-    $(".song").removeClass("playing")
-    $(this).addClass("playing");
-
-
-    t = jQuery(this).find(".blue");
-    
-    w = $(".song").width();
-
-    $(t).width( Math.floor(relX) );
-    
-    audioElement.play();
-    total = audioElement.duration
-    audioElement.currentTime = (relX/w)*total; // jumps to 29th secs
-
-		 $(".playing").mousemove(function(e){
-		  var parentOffset = $(this).parent().offset(); 
-		  var relX = e.pageX - parentOffset.left;
-		  //console.log(relX, $(this).width()); 
-		  t = jQuery(this).find(".grey");
-		  $(t).width( Math.floor(relX) );
-		});
-
-		$(".playing").mouseout(function(e){
-		  t = jQuery(this).find(".grey");
-		  //console.log("out");
-		  $(t).width( 0 );
-		});
-    
-});
-
-
-
-animate();
-function animate() {
-    requestAnimationFrame(animate);
-    
-    seek = audioElement.currentTime;
-    total = audioElement.duration
-    w = $(".song").width();
- 
-   
-    //console.log(seek,total,w);
-
-    //do stuff
-    //do stuff
-    $(".playing .blue").width( Math.floor(w*(seek/total)) );
-        $(".playing .elapsed").text( Math.floor(seek/60)+":"+Math.floor(seek%60)+" /" );
-    
-}
-
-
-
-
-
-
-//just animate when active
-window.requestAnimFrame = (function () {
-    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function (  callback,  element) {
-        window.setTimeout(callback, 1000 / 60);
-    };
-})();
-
-});//]]>  
-
-*/
-
 </script>
 
 </head>
@@ -344,7 +260,7 @@ window.requestAnimFrame = (function () {
 
 <div id="playlist">
 
-  <h1>dead-simple html5 audio playlist</h1>
+  <h1>HTML5 Playlist Generator</h1>
 
 	
 		<div class="song notplaying" id="idx1">
